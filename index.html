@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Звезда Бесконечности — Кабинет таролога</title>
+
+  <!-- Подключение Google Fonts: Montserrat (заголовки) и Open Sans (текст) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+
+
+  <style>
+    /* ==========================================================================
+       ЦВЕТОВАЯ ПАЛИТРА И ПЕРЕМЕННЫЕ
+       ========================================================================== */
+    :root {
+      --bg-main: #F7F1E6;        /* Молочный — основной фон сайта */
+      --brand-primary: #6B4E8E;  /* Аметистовый — шапка, заголовки, важные кнопки */
+      --bg-dark: #2E2560;        /* Полночный индиго — подвал, акцентные блоки */
+      --accent-lilac: #B79FD1;   /* Лиловый — карточки, hover */
+      --text-main: #3B2417;      /* Тёмный шоколад — основной текст */
+      --border-oak: #A97C50;     /* Дуб — разделители, рамки */
+      --border-silver: #C9C4B8;  /* Лунное серебро — разделители, мягкие рамки */
+      --btn-copy: #A0522D;       /* Корица — акцентная кнопка (копировать) */
+      --stop-red: #C62828;       /* Красный — кнопка разгрузки (исходное состояние) */
+      --stop-green: #2E7D32;     /* Зелёный — кнопка разгрузки (режим отдыха) */
+      --white: #FFFFFF;
+      --shadow-soft: 0 4px 14px rgba(46, 37, 96, 0.08);
+      --radius-md: 14px;
+      --radius-sm: 8px;
+      --transition: 0.25s ease;
+    }
+
+    /* ==========================================================================
+       БАЗОВЫЕ СТИЛИ (MOBILE-FIRST)
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, button, .tile-title {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Контейнер страницы (отступ сверху под фиксированные элементы управления) */
+    .app-container {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 72px 16px 32px;
+      flex: 1 0 auto;
+    }
+
+    /* ==========================================================================
+       ФИКСИРОВАННАЯ ПАНЕЛЬ: СТОП-КНОПКА (СЛЕВА) И НАСТРОЕНИЕ + ДОМИК (СПРАВА)
+       ========================================================================== */
+
+    /* 1. Прямоугольная кнопка «Стоп / Энергетическая разгрузка» в левом верхнем углу */
+    .stop-unload-btn {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      padding: 8px 11px;
+      border-radius: var(--radius-sm);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      background-color: var(--stop-red);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1.2;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: background-color var(--transition), transform var(--transition);
+    }
+
+    .stop-unload-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .stop-unload-btn:active {
+      transform: scale(0.97);
+    }
+
+    .stop-unload-btn.rest-mode {
+      background-color: var(--stop-green);
+    }
+
+    /* 2. Правый верхний угол: Виджет настроения + Иконка домика */
+    .top-right-controls {
+      position: fixed;
+      top: 10px;
+      right: 12px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .top-right-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Контейнер кнопок настроения */
+    .mood-widget {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background-color: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid var(--border-oak);
+      border-radius: 999px;
+      padding: 3px 6px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .mood-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      background: transparent;
+      font-size: 16px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), background-color var(--transition);
+    }
+
+    .mood-btn:hover {
+      transform: scale(1.12);
+      background-color: var(--bg-main);
+    }
+
+    .mood-btn.active {
+      border-color: var(--brand-primary);
+      background-color: var(--accent-lilac);
+    }
+
+    /* Карточка с теплой фразой под смайликами */
+    .mood-phrase-box {
+      display: none;
+      width: min(290px, calc(100vw - 24px));
+      background-color: var(--white);
+      border: 2px solid var(--brand-primary);
+      border-radius: var(--radius-md);
+      padding: 10px 30px 10px 12px;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      box-shadow: 0 8px 22px rgba(46, 37, 96, 0.16);
+      position: relative;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .mood-phrase-box.visible {
+      display: block;
+    }
+
+    .mood-phrase-close {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: var(--brand-primary);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 4px;
+    }
+
+    /* Кнопка-домик в правом верхнем углу на ВСЕХ экранах */
+    .home-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--border-oak);
+      background-color: var(--brand-primary);
+      color: var(--white);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: transform var(--transition), background-color var(--transition);
+      flex-shrink: 0;
+    }
+
+    .home-icon-btn:hover,
+    .home-icon-btn:focus-visible {
+      background-color: var(--bg-dark);
+      transform: scale(1.06);
+      outline: none;
+    }
+
+    /* ==========================================================================
+       ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ (SPA)
+       ========================================================================== */
+    .screen {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Общие заголовки экранов */
+    .page-title {
+      color: var(--brand-primary);
+      text-align: center;
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    /* ==========================================================================
+       ЭКРАН 1: ГЛАВНАЯ СТРАНИЦА (screen-home)
+       ========================================================================== */
+    .home-meta-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 26px;
+      padding: 14px 16px;
+      background-color: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--border-silver);
+      border-top: 3px solid var(--border-oak);
+      border-radius: var(--radius-md);
+    }
+
+    .lunar-date {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--brand-primary);
+      white-space: nowrap;
+    }
+
+    .daily-quote {
+      font-size: 0.92rem;
+      font-style: italic;
+      color: var(--text-main);
+      border-left: 3px solid var(--accent-lilac);
+      padding-left: 12px;
+    }
+
+    /* Сетка квадратных плиток (центруется аккуратно для 5 плиток) */
+    .tiles-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .tile-card {
+      width: calc(50% - 7px);
+      aspect-ratio: 1 / 1;
+      background-color: var(--bg-main);
+      border: 2px solid var(--border-oak);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: background-color var(--transition), transform var(--transition), border-color var(--transition);
+    }
+
+    .tile-card:hover,
+    .tile-card:focus-visible {
+      background-color: var(--accent-lilac);
+      border-color: var(--brand-primary);
+      transform: translateY(-3px);
+      outline: none;
+    }
+
+    .tile-emoji {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .tile-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    /* ==========================================================================
+       ЭКРАН 2: ВЫБОР КОЛОДЫ ПОД ЗАПРОС (screen-decks)
+       ========================================================================== */
+    .decks-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .deck-card {
+      background-color: var(--white);
+      border: 2px solid var(--border-oak);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      transition: background-color var(--transition), transform var(--transition), border-color var(--transition);
+    }
+
+    .deck-card:hover,
+    .deck-card:focus-visible {
+      background-color: var(--accent-lilac);
+      border-color: var(--brand-primary);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .deck-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      margin-bottom: 6px;
+    }
+
+    .deck-card:hover .deck-card-title {
+      color: var(--bg-dark);
+    }
+
+    .deck-card-spec {
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+
+    .deck-card-action {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--btn-copy);
+      align-self: flex-end;
+    }
+
+    /* Внутренний вид выбранной колоды */
+    .deck-detail-view {
+      display: none;
+    }
+
+    .deck-detail-view.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--brand-primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 18px;
+      transition: background-color var(--transition);
+    }
+
+    .btn-back:hover {
+      background-color: var(--bg-dark);
+    }
+
+    .deck-detail-header {
+      background-color: var(--bg-dark);
+      color: var(--white);
+      padding: 18px 20px;
+      border-radius: var(--radius-md);
+      border-bottom: 4px solid var(--border-oak);
+      margin-bottom: 20px;
+    }
+
+    .deck-detail-header h3 {
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+      color: var(--bg-main);
+    }
+
+    .deck-detail-header p {
+      font-size: 0.95rem;
+      color: var(--border-silver);
+    }
+
+    .category-block {
+      background-color: var(--white);
+      border: 1px solid var(--border-silver);
+      border-left: 4px solid var(--brand-primary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .category-heading {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-silver);
+    }
+
+    .question-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-silver);
+    }
+
+    .question-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .question-text {
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    /* Блок универсального промпта */
+    .prompt-block {
+      background-color: var(--white);
+      border: 2px solid var(--border-oak);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .prompt-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-silver);
+    }
+
+    .prompt-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--bg-dark);
+    }
+
+    .prompt-body {
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-silver);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      color: var(--text-main);
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       ЭКРАН 3: ОТВЕТЫ ШАБЛОНЫ (screen-templates) И ЭКРАН 4: ФОРМУЛИРОВКА ВОПРОСА
+       ========================================================================== */
+    .template-section {
+      margin-bottom: 26px;
+    }
+
+    .template-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      background-color: var(--brand-primary);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 14px;
+    }
+
+    .template-variants {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .template-card {
+      background-color: var(--white);
+      border: 1px solid var(--border-oak);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .template-variant-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+    }
+
+    .template-text {
+      font-size: 0.94rem;
+      color: var(--text-main);
+      background-color: var(--bg-main);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-silver);
+    }
+
+    /* Стили для карточек конструктора «Формулировка вопроса Картам» */
+    .question-helper-card {
+      background-color: var(--white);
+      border: 1px solid var(--border-oak);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .question-helper-label {
+      display: block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .question-helper-textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.94rem;
+      color: var(--text-main);
+      background-color: var(--bg-main);
+      border: 1.5px solid var(--border-silver);
+      border-radius: var(--radius-sm);
+      resize: vertical;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .question-helper-textarea:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(107, 78, 142, 0.15);
+    }
+
+        /* Новый блок для всегда видимого промпта со скроллом */
+    .prompt-preview-box {
+      margin-top: 8px;
+      white-space: pre-wrap;
+      font-size: 0.83rem;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-silver);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      line-height: 1.48;
+      max-height: 160px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-oak) transparent;
+    }
+
+    .prompt-preview-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    .prompt-preview-box::-webkit-scrollbar-thumb {
+      background-color: var(--border-oak);
+      border-radius: 3px;
+    }
+
+    /* ==========================================================================
+       КНОПКА «СКОПИРОВАТЬ»
+       ========================================================================== */
+    .btn-copy {
+      align-self: flex-start;
+      background-color: var(--btn-copy);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 15px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color var(--transition), transform var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+      background-color: var(--bg-dark);
+    }
+
+    .btn-copy:active {
+      transform: scale(0.97);
+    }
+
+    .btn-copy.copied {
+      background-color: var(--brand-primary);
+    }
+
+    /* ==========================================================================
+       ПОДВАЛ С КНОПКОЙ «ГЛАВНАЯ» ВНИЗУ СЛЕВА
+       ========================================================================== */
+    .app-footer {
+      flex-shrink: 0;
+      background-color: var(--bg-dark);
+      color: var(--bg-main);
+      border-top: 3px solid var(--border-oak);
+      padding: 14px 16px;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-footer-home {
+      background-color: var(--brand-primary);
+      color: var(--white);
+      border: 1px solid var(--accent-lilac);
+      border-radius: var(--radius-sm);
+      padding: 9px 18px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color var(--transition);
+    }
+
+    .btn-footer-home:hover {
+      background-color: var(--accent-lilac);
+      color: var(--text-main);
+    }
+
+    .footer-note {
+      font-size: 0.82rem;
+      color: var(--border-silver);
+      text-align: right;
+    }
+
+    /* ==========================================================================
+       АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ И ПК
+       ========================================================================== */
+    @media (min-width: 600px) {
+      .app-container {
+        padding: 74px 24px 40px;
+      }
+
+      .stop-unload-btn {
+        padding: 10px 16px;
+        font-size: 0.84rem;
+      }
+
+      .mood-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+      }
+
+      .home-icon-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+      }
+
+      .page-title {
+        font-size: 1.85rem;
+        margin-bottom: 24px;
+      }
+
+      .home-meta-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .daily-quote {
+        text-align: right;
+        border-left: none;
+        border-right: 3px solid var(--accent-lilac);
+        padding-left: 0;
+        padding-right: 14px;
+        max-width: 65%;
+      }
+
+      .tiles-grid {
+        gap: 20px;
+      }
+
+      .tile-card {
+        width: calc(33.333% - 14px);
+      }
+
+      .tile-emoji {
+        font-size: 2.5rem;
+      }
+
+      .tile-title {
+        font-size: 1.02rem;
+      }
+
+      .decks-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .question-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .question-item .btn-copy {
+        align-self: center;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .decks-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .template-variants {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Фиксированная кнопка «Стоп / Энергетическая разгрузка» в верхнем левом углу -->
+  <button
+    type="button"
+    class="stop-unload-btn"
+    id="stop-unload-btn"
+    aria-pressed="false"
+  >Стоп / Разгрузка</button>
+
+  <!-- 2. Фиксированный блок справа: Виджет настроения + Иконка домика -->
+  <div class="top-right-controls">
+    <div class="top-right-row">
+      <div class="mood-widget" role="group" aria-label="Виджет настроения">
+        <button type="button" class="mood-btn" data-mood="green" title="Отлично" aria-label="Отлично">🟢</button>
+        <button type="button" class="mood-btn" data-mood="yellow" title="Нормально" aria-label="Нормально">🟡</button>
+        <button type="button" class="mood-btn" data-mood="red" title="Плохо" aria-label="Плохо">🔴</button>
+      </div>
+
+      <button
+        type="button"
+        class="home-icon-btn"
+        id="global-home-btn"
+        title="На главную"
+        aria-label="Вернуться на главную страницу"
+      >🏠</button>
+    </div>
+
+    <!-- Всплывающая теплая фраза под виджетом настроения -->
+    <div id="mood-phrase-box" class="mood-phrase-box" role="status" aria-live="polite">
+      <button type="button" id="mood-phrase-close" class="mood-phrase-close" aria-label="Закрыть фразу">×</button>
+      <span id="mood-phrase-text"></span>
+    </div>
+  </div>
+
+  <main class="app-container">
+
+    <!-- ======================================================================
+         ЭКРАН 1: ГЛАВНАЯ СТРАНИЦА
+         ====================================================================== -->
+    <section id="screen-home" class="screen active">
+      <h1 class="page-title">⭐ Звезда Бесконечности ⭐</h1>
+
+      <!-- Информационная панель: дата и случайная цитата -->
+      <div class="home-meta-bar">
+        <div id="lunar-date" class="lunar-date">Д.М - Лунный день</div>
+        <div id="daily-quote" class="daily-quote">Цитата</div>
+      </div>
+
+      <!-- Сетка квадратных плиток -->
+      <div class="tiles-grid">
+        <button type="button" class="tile-card" id="tile-decks">
+          <span class="tile-emoji">🔮</span>
+          <span class="tile-title">Выбор колоды под запрос</span>
+        </button>
+
+        <a
+          href="https://t.me/+6lbqdrF4TW40Nzc6"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="tile-card"
+        >
+          <span class="tile-emoji">✨</span>
+          <span class="tile-title">Матрица судьбы Калькуляторы</span>
+        </a>
+
+        <button type="button" class="tile-card" id="tile-templates">
+          <span class="tile-emoji">💌</span>
+          <span class="tile-title">Ответы Шаблоны</span>
+        </button>
+
+        <a
+          href="https://runes.ezoway.com.ua/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="tile-card"
+        >
+          <span class="tile-emoji">🌙</span>
+          <span class="tile-title">Руны Справка</span>
+        </a>
+
+        <!-- 3. Новая плитка «Формулировка вопроса Картам» -->
+        <button type="button" class="tile-card" id="tile-question-helper">
+          <span class="tile-emoji">📝</span>
+          <span class="tile-title">Формулировка вопроса Картам</span>
+        </button>
+
+   <!-- ⬇️ ВСТАВЬТЕ ЭТОТ КУСОК СЮДА ⬇️ -->
+        <!-- 4. Новая плитка «Значение карт» -->
+        <a
+          href="https://annaoginski.com/lenormand/znacheniya-kart/#vsadnik:~:text=%D0%90%D0%9D%D0%9D%D0%90%20%D0%9E%D0%93%D0%98%D0%9D%D0%A1%D0%9A%D0%98-,%D0%97%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%BA%D0%B0%D1%80%D1%82,%D0%9A%D1%80%D0%B5%D1%81%D1%82,-%D0%9B%D0%95%D0%9D%D0%9E%D0%A0%D0%9C%D0%90%D0%9D"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="tile-card"
+        >
+          <span class="tile-emoji">🃏</span>
+          <span class="tile-title">Значение карт</span>
+        </a>
+        <!-- ⬆️ КОНЕЦ ВСТАВКИ ⬆️ -->
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         ЭКРАН 2: ВЫБОР КОЛОДЫ ПОД ЗАПРОС
+         ====================================================================== -->
+    <section id="screen-decks" class="screen">
+      <h2 class="page-title">Выбор колоды под запрос</h2>
+
+      <!-- Список карточек колод -->
+      <div id="decks-list-view" class="decks-grid"></div>
+
+      <!-- Внутренний экран конкретной колоды -->
+      <div id="deck-detail-view" class="deck-detail-view">
+        <button type="button" class="btn-back" id="btn-back-to-decks">← Назад к выбору колоды</button>
+        <div id="deck-detail-content"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         ЭКРАН 3: ОТВЕТЫ ШАБЛОНЫ
+         ====================================================================== -->
+    <section id="screen-templates" class="screen">
+      <h2 class="page-title">💌 РАЗДЕЛ «ОТВЕТЫ» (Шаблоны)</h2>
+      <div id="templates-container"></div>
+    </section>
+
+    <!-- ======================================================================
+         ЭКРАН 4: ФОРМУЛИРОВКА ВОПРОСА КАРТАМ
+         ====================================================================== -->
+    <section id="screen-question-helper" class="screen">
+      <div class="template-section">
+        <h2 class="template-section-title">📝 Формулировка вопроса Картам</h2>
+        <div id="question-helper-container" class="template-variants"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Подвал с кнопкой «Главная» внизу слева -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <button type="button" class="btn-footer-home" id="footer-home-btn">Главная</button>
+      <span class="footer-note">🌙 Звезда Бесконечности</span>
+    </div>
+  </footer>
+
+  <script>
+    /* ========================================================================
+       ДАННЫЕ ПРИЛОЖЕНИЯ
+       ======================================================================== */
+
+    // Массив цитат для Главной страницы
+    const QUOTES = [
+      "Не в том смысл жизни, чтобы найти себя, а в том, чтобы создать себя.",
+      "Жизнь — как вождение велосипеда. Чтобы сохранить равновесие, ты должен двигаться.",
+      "Не тот велик, кто никогда не падал, а тот велик — кто падал и вставал.",
+      "Никакое дело не покажется невыполнимым, если разбить его на части.",
+      "Будьте собой; прочие роли уже заняты.",
+      "Трудности закаляют настойчивых и ломают слабых.",
+      "Лучший способ предсказать будущее — создать его.",
+      "Твоё время ограничено, не трать его, живя чужой жизнью.",
+      "Даже самый длинный путь начинается с первого шага.",
+      "Единственный человек, с которым вы должны сравнивать себя — это вы в прошлом.",
+      "Счастье не в том, чтобы делать всегда, что хочешь, а в том, чтобы всегда хотеть того, что делаешь.",
+      "Успех — это способность идти от поражения к поражению, не теряя оптимизма.",
+      "Никогда не поздно стать тем, кем тебе хотелось бы быть.",
+      "Страх убивает больше мечтаний, чем неудачи.",
+      "Всё, что нас не убивает, делает нас сильнее.",
+      "Всё, что происходит, происходит вовремя.",
+      "Сила не в том, чтобы не бояться, а в том, чтобы идти вперёд вопреки страху.",
+      "Если хочешь иметь то, чего никогда не имел, придётся делать то, чего никогда не делал.",
+      "Спокойствие сильнее эмоций, молчание громче крика, равнодушие страшнее войны.",
+      "Не ждите подходящего момента — берите момент и делайте его подходящим.",
+      "Мы становимся тем, о чём думаем.",
+      "Победитель — это мечтатель, который просто не сдался.",
+      "Самая тёмная ночь всегда перед рассветом.",
+      "Дисциплина — это решение делать то, чего очень не хочется делать, чтобы достичь того, чего очень хочется достичь.",
+      "Твоя жизнь становится лучше только тогда, когда лучше становишься ты сам.",
+      "Не бойся расти медленно, бойся оставаться неизменным.",
+      "Ошибки — это доказательство того, что вы пытаетесь.",
+      "Меняйте в своей жизни то, что можете изменить, и примите то, что изменить нельзя.",
+      "Уважай прошлое, создавай будущее, живи настоящим.",
+      "Никто не сможет забрать у тебя то, что находится у тебя в голове."
+    ];
+
+    // Ссылки для кнопки «Стоп / Энергетическая разгрузка»
+    const RELAX_VIDEOS = [
+      "https://youtu.be/vPB6dhNValg",
+      "https://youtu.be/Df3mkjtEwCY",
+      "https://youtu.be/6XA7_CtGZyE",
+      "https://www.youtube.com/live/u3papaX85MA"
+    ];
+
+    // Фразы для виджета настроения
+    const MOOD_PHRASES = {
+      green: [
+        "Отличный день для практики! Энергия бьет ключом.",
+        "Вы на пике формы. Карты будут говорить четко.",
+        "Прекрасное настроение — залог точного расклада.",
+        "Сегодня отличный день, чтобы помочь другим.",
+        "Ваша интуиция сегодня особенно сильна.",
+        "Наслаждайтесь этим состоянием, оно ресурсно.",
+        "Светлая голова и доброе сердце — лучшие инструменты.",
+        "Всё складывается наилучшим образом.",
+        "Гармония внутри — гармония в картах.",
+        "Пусть сегодняшний день принесет вам радость."
+      ],
+      yellow: [
+        "Спокойное состояние — тоже отличный ресурс.",
+        "Всё идет своим чередом. Дышите ровно.",
+        "Нормально — это тоже хорошо. Берегите силы.",
+        "Умеренность и баланс — ваши помощники сегодня.",
+        "Сделайте паузу на чашечку чая перед сессией.",
+        "Ровный фон — хорошая база для работы.",
+        "Не торопитесь, всё успеете.",
+        "Ваше спокойствие передастся клиенту.",
+        "День как день, пусть пройдет гладко.",
+        "Немного тишины пойдет на пользу."
+      ],
+      red: [
+        "Плохое настроение — не повод для тревоги. Отдохните.",
+        "Сначала позаботьтесь о себе, потом о клиентах.",
+        "Сделайте глубокий вдох. Вы справитесь.",
+        "Если тяжело — перенесите сессию или сделайте перерыв.",
+        "Ваши чувства важны. Не игнорируйте их.",
+        "Сегодня можно просто быть, а не делать.",
+        "Выпейте воды, это поможет сбросить напряжение.",
+        "Не берите чужие проблемы близко к сердцу сегодня.",
+        "Всё пройдет, и это тоже.",
+        "Позвольте себе немного слабости. Вы человек."
+      ]
+    };
+
+    // Данные для 3 столбиков конструктора «Формулировка вопроса Картам»
+    const QUESTION_HELPER_COLUMNS = [
+      {
+        id: "universal",
+        title: "Столбик 1. Универсальный (для любых тем)",
+        placeholder: "Вставьте сырой вопрос клиента...",
+        previewPrompt: `Ты — таролог-редактор. Клиент прислал сырой вопрос:
+Переформулируй его в 3 четких вопроса для расклада. Правила:
+
+Один вопрос = одна тема, без «и», «или», двойных смыслов.
+
+Только открытая форма (что/как/каким образом/стоит ли), без вопроса «да/нет» в чистом виде.
+
+Без фатализма и манипуляций («когда он вернется», «любит ли она меня»).
+
+Учитывай временной горизонт: если он не указан — добавь «в ближайшие 3 месяца».
+Выведи строго 3 варианта, каждый с новой строки, без пояснений.`,
+        buildPrompt: (question) => `Ты — таролог-редактор. Клиент прислал сырой вопрос: ${question}
+Переформулируй его в 3 четких вопроса для расклада. Правила:
+
+Один вопрос = одна тема, без «и», «или», двойных смыслов.
+
+Только открытая форма (что/как/каким образом/стоит ли), без вопроса «да/нет» в чистом виде.
+
+Без фатализма и манипуляций («когда он вернется», «любит ли она меня»).
+
+Учитывай временной горизонт: если он не указан — добавь «в ближайшие 3 месяца».
+Выведи строго 3 варианта, каждый с новой строки, без пояснений.`
+      },
+      {
+        id: "love",
+        title: "Столбик 2. Для отношений (самая частая зона ошибок)",
+        placeholder: "Вставьте эмоциональный запрос клиента...",
+        previewPrompt: `Ты — таролог. Задача: превратить эмоциональный запрос клиента :  , в 3 корректных вопроса для карт.
+Требования:
+
+Смести фокус с «чужих мыслей» на «динамику и действие»: что происходит между вами, что мешает, как поступить.
+
+Убери проекции («он меня любит?») — замени на «каковы его реальные намерения по отношению ко мне».
+
+Один вопрос — один аспект (чувства / препятствия / стратегия).
+
+Срок: «в течение 1–3 месяцев».
+Выведи ровно 3 пронумерованных вопроса, без комментариев.`,
+        buildPrompt: (question) => `Ты — таролог. Задача: превратить эмоциональный запрос клиента : ${question || '...'} , в 3 корректных вопроса для карт.
+Требования:
+
+Смести фокус с «чужих мыслей» на «динамику и действие»: что происходит между вами, что мешает, как поступить.
+
+Убери проекции («он меня любит?») — замени на «каковы его реальные намерения по отношению ко мне».
+
+Один вопрос — один аспект (чувства / препятствия / стратегия).
+
+Срок: «в течение 1–3 месяцев».
+Выведи ровно 3 пронумерованных вопроса, без комментариев.`
+      },
+      {
+        id: "business",
+        title: "Столбик 3. Для бизнеса и решений (когда нужен прогноз и выбор)",
+        placeholder: "Вставьте вопрос по бизнесу или выбору...",
+        previewPrompt: `Ты — бизнес-таролог. Клиент спрашивает:
+Сформулируй 3 вопроса для расклада по правилам:
+
+Вопрос должен быть проверяемым и конкретным (сфера, срок, критерий успеха).
+
+Раздели сложный запрос на: текущая ситуация → риски/препятствия → наилучшее действие.
+
+Никаких «да/нет» и «когда точно»; используй «что способствует», «какой риск», «какая стратегия».
+
+Если срок не указан — добавь «в течение 3–6 месяцев».
+Выведи ровно 3 варианта, кратко, без воды.`,
+        buildPrompt: (question) => `Ты — бизнес-таролог. Клиент спрашивает: ${question}
+Сформулируй 3 вопроса для расклада по правилам:
+
+Вопрос должен быть проверяемым и конкретным (сфера, срок, критерий успеха).
+
+Раздели сложный запрос на: текущая ситуация → риски/препятствия → наилучшее действие.
+
+Никаких «да/нет» и «когда точно»; используй «что способствует», «какой риск», «какая стратегия».
+
+Если срок не указан — добавь «в течение 3–6 месяцев».
+Выведи ровно 3 варианта, кратко, без воды.`
+      }
+    ];
+
+    // Данные всех колод
+    const DECKS_DATA = [
+      {
+        id: "toth",
+        title: "ТАРО ТОТА",
+        specialization: "Личностный рост, духовность, карма, эзотерика.",
+        categories: [
+          {
+            name: "Личностный рост и предназначение",
+            spread: "Кельтский крест (10 карт)",
+            questions: [
+              "В чем мой главный урок в этой жизни?",
+              "Какие скрытые таланты мне нужно раскрыть?",
+              "Что мешает мне выйти на новый уровень развития?",
+              "Какова моя истинная цель на данный момент?"
+            ]
+          },
+          {
+            name: "Духовность и энергия",
+            spread: "Триплет (3 карты)",
+            questions: [
+              "Какова моя текущая энергетическая вибрация?",
+              "Как мне наладить связь со своим высшим «Я»?",
+              "Какие духовные практики будут для меня наиболее полезны сейчас?",
+              "Откуда идет утечка моей энергии?"
+            ]
+          },
+          {
+            name: "Карма и сложные ситуации",
+            spread: "Выбор (7 карт)",
+            questions: [
+              "За что я сейчас расплачиваюсь (какой кармический урок)?",
+              "Как разорвать замкнутый круг повторяющихся проблем?",
+              "В чем кармическая причина моей текущей сложной ситуации?",
+              "Какой опыт я должен извлечь из этого кризиса?"
+            ]
+          },
+          {
+            name: "Эзотерика и философия",
+            spread: "Карта дня (1 карта)",
+            questions: [
+              "Какая эзотерическая практика мне подходит больше всего?",
+              "Что скрывается за моим интересом к оккультизму?",
+              "Как мне развить свою интуицию?"
+            ]
+          }
+        ],
+        promptTitle: "Универсальный промпт для Таро Тота",
+        promptText: `Роль: Ты — профессиональный, эмпатичный и глубокий таролог, эксперт по системе Таро Тота (Алистера Кроули). Ты умеешь видеть не только бытовые события, но и психологические причины, кармические уроки и энергетические потоки.
+Входные данные:
+Расклад: 
+Вопрос клиента: 
+Выпавшие карты (и их позиции): 
+Твоя задача — выдать ответ строго в следующей структуре:
+#### 1. Глубокий анализ (для таролога)
+Разбери расклад по шагам, учитывая специфику Таро Тота:
+* Общая энергетика и стихии: Какие стихии преобладают (Огонь, Вода, Воздух, Земля)? О чем это говорит в контексте вопроса?
+* Архетипы и Старшие Арканы: Если выпали Старшие Арканы — какие судьбоносные или кармические процессы они обозначают?
+* Анализ по позициям: Кратко объясни значение каждой карты на ее позиции. Удели внимание сочетаниям карт и их взаимодействию.
+* Психологический срез: Что происходит в подсознании клиента? Какие страхи, блоки или скрытые желания показывают карты?
+#### 2. Вывод и рекомендации (суть)
+Сформулируй четкий, прямой ответ на вопрос клиента на основе анализа.
+* Итог: К чему все идет?
+* Совет: Что конкретно нужно сделать, от чего отказаться и на что обратить внимание (какие энергии задействовать)?
+#### 3. Текст для голосового сообщения клиенту
+Напиши текст, который можно зачитать или отправить голосом.
+* Тон: Заботливый, уверенный, поддерживающий, без излишней эзотерической "воды" и пугающих терминов.
+* Формат: Живая, разговорная речь, обращенная на "Вы".
+* Структура сообщения: Приветствие и краткое описание текущей энергии ситуации; Основные моменты (что мешает/что помогает), сформулированные мягко и экологично; Главный вывод; Конкретная рекомендация к действию; Завершающая фраза поддержки.`
+      },
+      {
+        id: "loginov",
+        title: "ТАРО ЛОГИНОВА",
+        specialization: "Любовь, карьера, здоровье, решение проблем (более прикладной и бытовой подход).",
+        categories: [
+          {
+            name: "Любовь и отношения",
+            spread: "Вокзал для двоих (7 карт)",
+            questions: [
+              "Какие перспективы у наших отношений с партнером?",
+              "Что он/она на самом деле ко мне чувствует?",
+              "Как мне улучшить взаимопонимание в паре?",
+              "Есть ли у нас будущее вместе?"
+            ]
+          },
+          {
+            name: "Карьера и работа",
+            spread: "Пирамида",
+            questions: [
+              "Стоит ли мне соглашаться на это предложение о работе?",
+              "Как мне повысить свой доход в ближайшее время?",
+              "В какой сфере мне лучше всего реализовать свои навыки?",
+              "Какие отношения с коллективом меня ждут на новом месте?"
+            ]
+          },
+          {
+            name: "Здоровье",
+            spread: "Триплет (3 карты)",
+            questions: [
+              "На что мне обратить внимание в своем физическом состоянии?",
+              "Какие эмоции влияют на мое самочувствие?",
+              "Какие методы восстановления организма будут эффективны?"
+            ]
+          },
+          {
+            name: "Решение проблем и выбор пути",
+            spread: "Выбор (7 карт)",
+            questions: [
+              "Какой из двух вариантов решения проблемы будет наиболее верным?",
+              "Что мне нужно сделать, чтобы выйти из тупика?",
+              "Какие последствия будут, если я выберу один путь, и если выберу другой?"
+            ]
+          }
+        ],
+        promptTitle: "Универсальный промпт для Таро Логинова",
+        promptText: `Роль: Ты — опытный, чуткий и практичный таролог, работающий в системе Таро Логинова. Ты умеешь давать конкретные, приземленные ответы, видеть корень проблем в повседневной жизни, отношениях и работе, а также находить практические пути решения. Твой стиль — ясность, логика и забота о клиенте.
+Входные данные:
+Расклад: 
+Вопрос клиента: 
+Выпавшие карты (и их позиции): 
+Твоя задача — выдать ответ строго в следующей структуре:
+1. Глубокий анализ (для таролога)
+Разбери расклад по шагам, учитывая специфику Таро Логинова (фокус на реальность, быт и человеческие эмоции):
+Общий фон и масти: Какие масти преобладают? Это говорит о сфере, где сосредоточена энергия (чувства/Кубки, действия/Жезлы, мысли/Мечи, финансы/Пентакли).
+Анализ по позициям: Кратко объясни значение каждой карты на ее позиции. Обрати внимание на то, как карты описывают реальное поведение, мысли и чувства участников ситуации.
+Взаимодействие и конфликты: Как карты сочетаются друг с другом? Есть ли явные противоречия, блоки или, наоборот, поддержка?
+Практический срез: В чем заключается суть проблемы или главный ресурс для ее решения на бытовом уровне.
+2. Вывод и рекомендации (суть)
+Сформулируй четкий, прямой ответ на вопрос клиента.
+Итог: Что показывает расклад — благоприятный исход, сложности или неизбежные перемены?
+Совет: Что конкретно нужно сделать, как изменить поведение или отношение к ситуации?
+3. Текст для голосового сообщения клиенту
+Напиши текст, который можно зачитать или отправить голосом.
+Тон: Дружелюбный, поддерживающий, спокойный, без сложных эзотерических терминов. Как разговор с мудрым другом или психологом.
+Формат: Живая разговорная речь. Обращение на «Вы».
+Структура сообщения: Приветствие и мягкое обозначение основной темы расклада; Описание текущего положения дел; Главный вывод; Конкретная рекомендация; Завершающая фраза поддержки.`
+      },
+      {
+        id: "lenormand",
+        title: "ЛЕНОРМАН",
+        specialization: "Бытовые вопросы, финансы, точные прогнозы, поездки (конкретика и факты).",
+        categories: [
+          {
+            name: "Деньги и финансы",
+            spread: "Двенадцать домов (12 карт)",
+            questions: [
+              "Стоит ли мне вкладывать деньги в этот проект?",
+              "Когда я смогу получить крупную сумму (или вернуть долг)?",
+              "Откуда придут деньги в этом месяце?",
+              "Какие траты меня ждут в ближайшее время?",
+              "Как мне увеличить свой капитал?"
+            ]
+          },
+          {
+            name: "Быт и повседневность",
+            spread: "Карта дня (1 карта)",
+            questions: [
+              "Как пройдет мой день (неделя)?",
+              "Что нужно сделать по дому в первую очередь?",
+              "Какие бытовые проблемы могут возникнуть?",
+              "Найду ли я потерянную вещь и где?"
+            ]
+          },
+          {
+            name: "Точные прогнозы (кто/что/когда)",
+            spread: "Кельтский крест (10 карт)",
+            questions: [
+              "Кто из моего окружения влияет на эту ситуацию?",
+              "Что конкретно произойдет в указанный срок?",
+              "Когда именно наступит нужное мне событие?",
+              "Чем закончится это дело?"
+            ]
+          },
+          {
+            name: "Поездки и путешествия",
+            spread: "Выбор (7 карт)",
+            questions: [
+              "Стоит ли мне ехать в этот отпуск?",
+              "Как пройдет моя поездка?",
+              "Какие неожиданности могут случиться в дороге?",
+              "Благоприятно ли это время для переезда?"
+            ]
+          }
+        ],
+        promptTitle: "Универсальный промпт для Ленорман",
+        promptText: `Роль: Ты — опытный, точный и проницательный таролог, работающий в системе Ленорман. Ты умеешь читать карты как связный текст, видеть конкретные события, действия людей, временные отрезки и давать четкие прогнозы на бытовом и финансовом уровне. Твой стиль — лаконичность, конкретика и практическая польза.
+Входные данные:
+Расклад: 
+Вопрос клиента: 
+Выпавшие карты (и их позиции): 
+Твоя задача — выдать ответ строго в следующей структуре:
+1. Глубокий анализ (для таролога)
+Разбери расклад по шагам, учитывая специфику Ленорман (чтение парами, цепочками, контекст и буквальные значения):
+Общая картина и ключевые карты: Какие карты доминируют? Есть ли в раскладе сигнификатор или карты-маркеры?
+Анализ по позициям и парам: Объясни значение каждой карты на ее позиции. Особое внимание удели сочетаниям карт.
+Хронология и динамика: Если в раскладе есть временные позиции (прошлое/будущее, месяцы), опиши, как события будут развиваться во времени.
+Скрытые влияния и «дома»: Если это Гранд Табло, обязательно проанализируй, в каком «доме» лежит каждая карта, и что это добавляет к ее значению.
+2. Вывод и рекомендации (суть)
+Сформулируй четкий, прямой ответ на вопрос клиента.
+Итог: Да/Нет, когда произойдет, кто будет участвовать, чем закончится. Максимальная конкретика.
+Совет: Какие конкретные действия предпринять?
+3. Текст для голосового сообщения клиенту
+Напиши текст, который можно зачитать или отправить голосом.
+Тон: Уверенный, спокойный, доброжелательный, но без лишней «воды». Как четкий отчет от надежного консультанта.
+Формат: Живая разговорная речь, обращенная на «Вы».
+Структура сообщения: Приветствие и сразу к делу — краткий ответ на вопрос; Описание событийного ряда (что именно произойдет, кто будет задействован); Важный нюанс или предупреждение; Четкая рекомендация к действию; Пожелание удачи и готовность ответить на уточняющие вопросы.`
+      },
+      {
+        id: "78doors",
+        title: "ТАРО 78 ДВЕРЕЙ",
+        specialization: "Психология, внутренние выборы, поиск ресурса, работа с жизненными «дверями» и переходами, самопознание.",
+        categories: [
+          {
+            name: "Внутренние двери и выбор пути",
+            spread: "Выбор (7 карт)",
+            questions: [
+              "Какая дверь сейчас открыта для меня, а какая закрыта?",
+              "Что мне нужно отпустить, чтобы войти в новую жизнь?",
+              "Какой внутренний ресурс поможет мне сделать выбор?",
+              "Что я найду за той дверью, которую боюсь открыть?"
+            ]
+          },
+          {
+            name: "Психология и самопознание",
+            spread: "Кельтский крест (10 карт)",
+            questions: [
+              "Какая моя главная внутренняя проблема сейчас?",
+              "Что я подавляю в себе и почему?",
+              "Какие мои убеждения мешают мне двигаться вперед?",
+              "Как мне примириться с собой и своим прошлым?"
+            ]
+          },
+          {
+            name: "Ресурс и вдохновение",
+            spread: "Триплет (3 карты)",
+            questions: [
+              "Где мне искать вдохновение и силы прямо сейчас?",
+              "Какая практика поможет мне вернуть внутренний баланс?",
+              "Что я могу сделать сегодня, чтобы почувствовать себя лучше?",
+              "В чем моя скрытая сила, о которой я забываю?"
+            ]
+          },
+          {
+            name: "Отношения и личные границы",
+            spread: "Вокзал для двоих (7 карт)",
+            questions: [
+              "Какие двери в отношениях с этим человеком стоит открыть?",
+              "Где мои личные границы нарушаются, и как это исправить?",
+              "Что я на самом деле ищу в этих отношениях?",
+              "Как мне выстроить более здоровую связь с этим человеком?"
+            ]
+          }
+        ],
+        promptTitle: "Универсальный промпт для Таро 78 Дверей",
+        promptText: `Роль: Ты — чуткий, психологически глубокий и бережный таролог, работающий в системе Таро 78 Дверей. Ты умеешь видеть за картами внутренние состояния, скрытые выборы, страхи и ресурсы клиента. Твой стиль — мягкое исследование, поддержка и помощь в открытии новых «дверей» без давления и фатализма.
+Входные данные:
+Расклад:
+Вопрос клиента: 
+Выпавшие карты (и их позиции):
+Твоя задача — выдать ответ строго в следующей структуре:
+Глубокий анализ (для таролога)
+Разбери расклад по шагам, учитывая специфику Таро 78 Дверей (фокус на психологию, выборы и внутренние ресурсы):
+Общий психологический фон: Какие темы звучат в раскладе — страхи, сомнения, надежды, скрытые желания?
+Двери и выборы: Какие «двери» символически открыты перед клиентом, какие закрыты, а какие он боится открыть?
+Анализ по позициям: Кратко объясни значение каждой карты на ее позиции. Обрати внимание на то, как карты описывают внутренние состояния и защитные механизмы клиента.
+Внутренние ресурсы и блоки: Где скрыт главный ресурс клиента? Что блокирует его движение вперед?
+Вывод и рекомендации (суть)
+Сформулируй четкий, но экологичный ответ на вопрос клиента.
+Итог: Что происходит на внутреннем уровне и к чему ведет текущий выбор?
+Совет: Какую «дверь» стоит попробовать открыть? Что конкретно сделать, чтобы получить ресурс и сдвинуться с места?
+Текст для голосового сообщения клиенту
+Напиши текст, который можно зачитать или отправить голосом.
+Тон: Мягкий, поддерживающий, бережный, без пугающих формулировок и жестких прогнозов. Как разговор с внимательным психологом.
+Формат: Живая разговорная речь, обращение на «Вы».
+Структура сообщения: Приветствие и мягкое обозначение внутренней темы; Описание того, что сейчас происходит внутри клиента; Что мешает и что помогает; Главный вывод и ресурс; Конкретная рекомендация к действию; Слова поддержки.`
+      },
+      {
+        id: "deviantmoon",
+        title: "ТАРО БЕЗУМНОЙ ЛУНЫ",
+        specialization: "Теневая работа, подсознание, эмоциональные кризисы, трансформация, магия, сны и внутренние глубины.",
+        categories: [
+          {
+            name: "Теневая работа и подсознание",
+            spread: "Кельтский крест (10 карт)",
+            questions: [
+              "Какая моя теневая сторона сейчас активна?",
+              "Что я не хочу видеть в себе и почему?",
+              "Откуда идет мой главный страх в этой ситуации?",
+              "Как мне интегрировать свою тень и обрести целостность?"
+            ]
+          },
+          {
+            name: "Эмоции и кризис",
+            spread: "Триплет (3 карты)",
+            questions: [
+              "Какая эмоция сейчас управляет моими решениями?",
+              "Что на самом деле скрывается за моей тревогой?",
+              "Как мне пережить этот кризис с минимальными потерями?",
+              "Где находится источник моей внутренней боли?"
+            ]
+          },
+          {
+            name: "Магия и интуиция",
+            spread: "Карта дня (1 карта)",
+            questions: [
+              "Какая магия мне сейчас нужна?",
+              "Что подсказывают мои сны и предчувствия?",
+              "Как мне усилить свою интуицию и слышать внутренний голос?",
+              "Какая энергия сейчас влияет на мою жизнь?"
+            ]
+          },
+          {
+            name: "Трансформация и новолуние",
+            spread: "Выбор (7 карт)",
+            questions: [
+              "Что должно умереть, чтобы родилось что-то новое?",
+              "Какой мой старый паттерн нужно отпустить?",
+              "Что я получу, пройдя через эту трансформацию?",
+              "Как мне подготовиться к новому этапу жизни?"
+            ]
+          }
+        ],
+        promptTitle: "Универсальный промпт для Таро Безумной Луны",
+        promptText: `Роль: Ты — глубокий, интуитивный и бережный таролог, работающий в системе Таро Безумной Луны. Ты умеешь видеть скрытые слои психики, теневые аспекты, эмоциональные кризисы и трансформационные процессы. Твой стиль — честный, но экологичный разговор о сложных вещах, без драматизации и пугающих пророчеств.
+Входные данные:
+Расклад: 
+Вопрос клиента: 
+Выпавшие карты (и их позиции): 
+Твоя задача — выдать ответ строго в следующей структуре:
+Глубокий анализ (для таролога)
+Разбери расклад по шагам, учитывая специфику Таро Безумной Луны (фокус на теневые аспекты, подсознание и трансформацию):
+Общий эмоциональный фон: Какие эмоции и состояния преобладают в раскладе? Что они говорят о внутреннем мире клиента?
+Теневые аспекты: Какие подавленные чувства, страхи или желания показывают карты? Что клиент не хочет признавать?
+Анализ по позициям: Кратко объясни значение каждой карты на ее позиции. Обрати внимание на то, как карты описывают кризисные и трансформационные процессы.
+Ресурс и защита: Что помогает клиенту проходить через эту трансформацию? Какие внутренние опоры стоит укрепить?
+Вывод и рекомендации (суть)
+Сформулируй четкий, но бережный ответ на вопрос клиента.
+Итог: Какой этап трансформации происходит сейчас и к чему он ведет?
+Совет: Что конкретно нужно сделать, чтобы пройти этот этап безопасно и с пользой для себя? Какие практики, ритуалы или действия помогут?
+Текст для голосового сообщения клиенту
+Напиши текст, который можно зачитать или отправить голосом.
+Тон: Глубокий, понимающий, поддерживающий, без мистического запугивания. Как разговор с мудрым проводником по внутренним мирам.
+Формат: Живая разговорная речь, обращение на «Вы».
+Структура сообщения: Приветствие и признание сложности ситуации; Что происходит на эмоциональном и подсознательном уровне; Скрытый смысл и ресурс кризиса; Главный вывод; Конкретная рекомендация или практика; Завершающая фраза поддержки и опоры.`
+      }
+    ];
+
+    // Данные шаблонов ответов
+    const TEMPLATES_DATA = [
+      {
+        sectionTitle: "1. Приветствие (если написали вам)",
+        variants: [
+          {
+            label: "Вариант 1. Теплое и заботливое",
+            text: "Здравствуйте! 🌙 Меня зовут Мария Николаевна. Рада, что вы мне написали. Расскажите, что вас сейчас волнует? С каким вопросом вы хотели бы разобраться? Я внимательно выслушаю и помогу подобрать нужный расклад."
+          },
+          {
+            label: "Вариант 2. Краткое и по делу",
+            text: "Добрый день! ✨ Меня зовут Мария Николаевна, я работаю с картами и эзотерическими системами. Готова помочь вам разобраться в текущей ситуации. С каким вопросом вы пришли?"
+          },
+          {
+            label: "Вариант 3. Уютное и мягкое",
+            text: "Приветствую вас! 🌟 Мария Николаевна на связи. Как хорошо, что вы написали. Давайте вместе посмотрим, что подсказывают карты по вашему вопросу. Расскажите, что вас беспокоит или о чем хотите узнать? Я вас внимательно слушаю."
+          }
+        ]
+      },
+      {
+        sectionTitle: "2. Мое Предложение (ответ на краткий вопрос в чате — предложение помощи и профессионализма)",
+        variants: [
+          {
+            label: "Вариант 1. Прямое и уверенное",
+            text: "Доброго времени суток! ✨ Я готова вам помочь с этим вопросом. Работаю профессионально с Таро, Ленорман и Матрицей судьбы. Могу дать ответ на ваш запрос."
+          },
+          {
+            label: "Вариант 2. С акцентом на экспертность",
+            text: "Здравствуйте! 🌙 Я могу помочь вам разобраться в этой ситуации. В своей работе я использую Таро, Ленорман и Матрицу судьбы. Уверена, что смогу дать вам полезные подсказки и ответ."
+          },
+          {
+            label: "Вариант 3. Краткое и по делу",
+            text: "Доброго времени суток! 🌟 Я готова взять ваш вопрос в работу. Владею Таро, Ленорман и Матрицей судьбы. Напишите мне, и я помогу вам найти верное решение."
+          }
+        ]
+      },
+      {
+        sectionTitle: "3. Прощание (с «добрым пинком» на возврат)",
+        variants: [
+          {
+            label: "Вариант 1. С акцентом на важность следующего шага",
+            text: "Спасибо вам за доверие и за эту встречу! ✨ Мне было очень приятно с вами поработать. Пусть полученная информация станет для вас прочной опорой. Но помните: карты показывают вектор, а решение всегда за вами. Если почувствуете, что нужен еще один взгляд со стороны или захотите проверить, как разворачиваются события — обязательно пишите. Я всегда на связи, чтобы помочь вам не сбиться с пути. До новых встреч! 🌙"
+          },
+          {
+            label: "Вариант 2. Заманчивое и интригующее",
+            text: "Благодарю вас за открытость и доверие. 🌟 Надеюсь, расклад помог вам немного иначе взглянуть на ситуацию. Знаете, часто самое интересное начинается именно после того, как мы получаем первые ответы. Если спустя время появятся новые вопросы, или вам захочется заглянуть чуть дальше и посмотреть развитие событий — вы знаете, где меня найти. Я с радостью помогу вам снова. До скорой связи! ✨"
+          },
+          {
+            label: "Вариант 3. Мягкое, но с внутренним магнитом",
+            text: "Спасибо, что выбрали меня! 🌙 Работа с вами была для меня в радость. Пусть карты и дальше будут к вам благосклонны, а подсказки принесут спокойствие. Если захотите проверить, как развивается ситуация, или появятся новые вопросы — не держите их в себе, пишите. В нашем деле важно вовремя получить нужную подсказку. Я с радостью помогу вам снова. Всего вам самого доброго! Мария Николаевна. 🌟"
+          }
+        ]
+      }
+    ];
+
+    /* ========================================================================
+       ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ДАТА, ЦИТАТА, БУФЕР ОБМЕНА)
+       ======================================================================== */
+
+        function initCurrentDate() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+
+      // 1. Задаем точку отсчета (известное новолуние): 6 января 2000 года, 18:14
+      const knownNewMoon = new Date(Date.UTC(2000, 0, 6, 18, 14, 0));
+      
+      // 2. Считаем, сколько дней прошло с той даты
+      const diffTime = now.getTime() - knownNewMoon.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      
+      // 3. Длина лунного цикла (синодический месяц) — 29.530588853 дней
+      const synodicMonth = 29.530588853;
+      
+      // 4. Вычисляем текущий лунный день (от 1 до 30)
+      // Берем остаток от деления и округляем
+      let lunarDay = Math.floor((diffDays % synodicMonth)) + 1;
+
+      // Защита от ошибок округления
+      if (lunarDay > 30) lunarDay = 30;
+      if (lunarDay < 1) lunarDay = 1;
+
+      // Выводим на экран
+           document.getElementById('lunar-date').textContent = 
+        `${day}.${month} - ${lunarDay} Лунный день`;
+    }
+  
+
+    function initRandomQuote() {
+      const randomIndex = Math.floor(Math.random() * QUOTES.length);
+      document.getElementById('daily-quote').textContent = `«${QUOTES[randomIndex]}»`;
+    }
+
+    // Универсальное копирование текста в буфер обмена
+    async function copyToClipboard(text, buttonElement) {
+      let copied = false;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (err) {
+          copied = false;
+        }
+      }
+
+      if (!copied) {
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.left = '-9999px';
+          textarea.style.top = '0';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          copied = document.execCommand('copy');
+          document.body.removeChild(textarea);
+        } catch (err) {
+          copied = false;
+        }
+      }
+
+      if (copied) {
+        const originalText = "Скопировать 📋";
+        buttonElement.textContent = "Скопировано!";
+        buttonElement.classList.add('copied');
+
+        clearTimeout(buttonElement._copyTimer);
+        buttonElement._copyTimer = setTimeout(() => {
+          buttonElement.textContent = originalText;
+          buttonElement.classList.remove('copied');
+        }, 2000);
+      }
+    }
+
+    function createCopyButton(getTextFn) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-copy';
+      btn.textContent = 'Скопировать 📋';
+      btn.addEventListener('click', () => {
+        const text = typeof getTextFn === 'function' ? getTextFn() : getTextFn;
+        copyToClipboard(text, btn);
+      });
+      return btn;
+    }
+
+    /* ========================================================================
+       1. КНОПКА «СТОП / ЭНЕРГЕТИЧЕСКАЯ РАЗГРУЗКА»
+       ======================================================================== */
+    function initStopUnloadButton() {
+      const stopBtn = document.getElementById('stop-unload-btn');
+      let isRestMode = false;
+
+      stopBtn.addEventListener('click', () => {
+        isRestMode = !isRestMode;
+        stopBtn.classList.toggle('rest-mode', isRestMode);
+        stopBtn.setAttribute('aria-pressed', String(isRestMode));
+
+        // При переходе в режим отдыха открываем случайное видео в новой вкладке
+        if (isRestMode) {
+          const randomVideo = RELAX_VIDEOS[Math.floor(Math.random() * RELAX_VIDEOS.length)];
+          window.open(randomVideo, '_blank', 'noopener,noreferrer');
+        }
+      });
+    }
+
+    /* ========================================================================
+       2. ВИДЖЕТ НАСТРОЕНИЯ (С LOCALSTORAGE)
+       ======================================================================== */
+    function initMoodWidget() {
+      const STORAGE_GROUP_KEY = 'tarot_mood_group';
+      const STORAGE_INDEX_KEY = 'tarot_mood_last_index';
+
+      const moodButtons = document.querySelectorAll('.mood-btn');
+      const phraseBox = document.getElementById('mood-phrase-box');
+      const phraseText = document.getElementById('mood-phrase-text');
+      const closeBtn = document.getElementById('mood-phrase-close');
+
+      function safeGetStorage(key) {
+        try {
+          return localStorage.getItem(key);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function safeSetStorage(key, value) {
+        try {
+          localStorage.setItem(key, value);
+        } catch (e) {
+          // Игнорируем ограничения хранения
+        }
+      }
+
+      // Выбирает случайный индекс фразы, отличный от предыдущего
+      function pickDifferentIndex(group, excludeIndex) {
+        const list = MOOD_PHRASES[group];
+        const availableIndices = [];
+        for (let i = 0; i < list.length; i++) {
+          if (i !== excludeIndex) {
+            availableIndices.push(i);
+          }
+        }
+        return availableIndices[Math.floor(Math.random() * availableIndices.length)];
+      }
+
+      function showMoodPhrase(group, forceDifferentFromSameGroup) {
+        if (!MOOD_PHRASES[group]) return;
+
+        const savedGroup = safeGetStorage(STORAGE_GROUP_KEY);
+        const savedIndexRaw = safeGetStorage(STORAGE_INDEX_KEY);
+        const savedIndex = savedIndexRaw !== null ? parseInt(savedIndexRaw, 10) : null;
+
+        const excludeIdx = (savedGroup === group || forceDifferentFromSameGroup) && !Number.isNaN(savedIndex)
+          ? savedIndex
+          : null;
+
+        const nextIdx = pickDifferentIndex(group, excludeIdx);
+        const phrase = MOOD_PHRASES[group][nextIdx];
+
+        safeSetStorage(STORAGE_GROUP_KEY, group);
+        safeSetStorage(STORAGE_INDEX_KEY, String(nextIdx));
+
+        moodButtons.forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.mood === group);
+        });
+
+        phraseText.textContent = phrase;
+        phraseBox.classList.add('visible');
+      }
+
+      // Обработчики клика на смайлики
+      moodButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          showMoodPhrase(btn.dataset.mood, false);
+        });
+      });
+
+      // Закрытие карточки с фразой
+      closeBtn.addEventListener('click', () => {
+        phraseBox.classList.remove('visible');
+      });
+
+      // При перезагрузке страницы подгружаем новую фразу из сохранённой группы
+      const initialGroup = safeGetStorage(STORAGE_GROUP_KEY);
+      if (initialGroup && MOOD_PHRASES[initialGroup]) {
+        showMoodPhrase(initialGroup, true);
+      }
+    }
+
+    /* ========================================================================
+       НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ (SPA)
+       ======================================================================== */
+    const screens = {
+      home: document.getElementById('screen-home'),
+      decks: document.getElementById('screen-decks'),
+      templates: document.getElementById('screen-templates'),
+      questionHelper: document.getElementById('screen-question-helper')
+    };
+
+    const decksListView = document.getElementById('decks-list-view');
+    const deckDetailView = document.getElementById('deck-detail-view');
+    const deckDetailContent = document.getElementById('deck-detail-content');
+
+    function showScreen(screenKey) {
+      Object.values(screens).forEach((el) => el.classList.remove('active'));
+      if (screens[screenKey]) {
+        screens[screenKey].classList.add('active');
+      }
+      if (screenKey === 'decks') {
+        showDecksList();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showDecksList() {
+      decksListView.style.display = 'grid';
+      deckDetailView.classList.remove('active');
+    }
+
+        function openDeckDetail(deckId) {
+      const deck = DECKS_DATA.find((d) => d.id === deckId);
+      if (!deck) return;
+
+      deckDetailContent.innerHTML = '';
+
+      const header = document.createElement('div');
+      header.className = 'deck-detail-header';
+      const title = document.createElement('h3');
+      title.textContent = deck.title;
+      const spec = document.createElement('p');
+      spec.textContent = `Специализация: ${deck.specialization}`;
+      header.append(title, spec);
+      deckDetailContent.appendChild(header);
+
+      deck.categories.forEach((cat) => {
+        const catBlock = document.createElement('div');
+        catBlock.className = 'category-block';
+
+        const catHeading = document.createElement('h4');
+        catHeading.className = 'category-heading';
+        catHeading.textContent = `${cat.name} — ${cat.spread}`;
+        catBlock.appendChild(catHeading);
+
+        cat.questions.forEach((qText, idx) => {
+          const item = document.createElement('div');
+          item.className = 'question-item';
+
+          const span = document.createElement('span');
+          span.className = 'question-text';
+          span.textContent = `${idx + 1}. ${qText}`;
+
+          const copyBtn = createCopyButton(qText);
+          item.append(span, copyBtn);
+          catBlock.appendChild(item);
+        });
+
+        deckDetailContent.appendChild(catBlock);
+      });
+
+      const promptBlock = document.createElement('div');
+      promptBlock.className = 'prompt-block';
+
+      const promptHeader = document.createElement('div');
+      promptHeader.className = 'prompt-header';
+
+      const promptTitle = document.createElement('h4');
+      promptTitle.className = 'prompt-title';
+      promptTitle.textContent = `[${deck.promptTitle}]`;
+      promptHeader.appendChild(promptTitle);
+
+      const inputWrap = document.createElement('div');
+      inputWrap.style.marginBottom = '15px';
+      inputWrap.style.display = 'flex';
+      inputWrap.style.flexDirection = 'column';
+      inputWrap.style.gap = '10px';
+
+      const labelSpread = document.createElement('label');
+      labelSpread.className = 'question-helper-label';
+      labelSpread.textContent = 'Расклад (название):';
+      
+      const inputSpread = document.createElement('input');
+      inputSpread.type = 'text';
+      inputSpread.className = 'question-helper-textarea';
+      inputSpread.style.minHeight = 'auto';
+      inputSpread.style.height = '40px';
+      inputSpread.placeholder = 'Например: Кельтский крест (10 карт)';
+
+      const labelQuestion = document.createElement('label');
+      labelQuestion.className = 'question-helper-label';
+      labelQuestion.textContent = 'Вопрос клиента:';
+
+      const inputQuestion = document.createElement('textarea');
+      inputQuestion.className = 'question-helper-textarea';
+      inputQuestion.style.minHeight = '60px';
+      inputQuestion.placeholder = 'Введите вопрос...';
+
+      const labelCards = document.createElement('label');
+      labelCards.className = 'question-helper-label';
+      labelCards.textContent = 'Выпавшие карты (и их позиции):';
+
+      const inputCards = document.createElement('textarea');
+      inputCards.className = 'question-helper-textarea';
+      inputCards.style.minHeight = '60px';
+      inputCards.placeholder = '1. Маг\n2. Жрица...';
+
+      inputWrap.append(labelSpread, inputSpread, labelQuestion, inputQuestion, labelCards, inputCards);
+
+      const getFinalPromptText = () => {
+        let finalText = deck.promptText;
+        const spreadVal = inputSpread.value.trim() || '(не указан)';
+        const questionVal = inputQuestion.value.trim() || '(не указан)';
+        const cardsVal = inputCards.value.trim() || '(не указаны)';
+
+        finalText = finalText.replace(/Расклад:\s*/g, `Расклад: ${spreadVal}\n`);
+        finalText = finalText.replace(/Вопрос клиента:\s*/g, `Вопрос клиента: ${questionVal}\n`);
+        finalText = finalText.replace(/Выпавшие карты \(и их позиции\):\s*/g, `Выпавшие карты (и их позиции): ${cardsVal}\n`);
+        return finalText;
+      };
+
+      const promptCopyBtn = createCopyButton(getFinalPromptText);
+      promptCopyBtn.style.marginTop = '10px';
+      promptHeader.appendChild(promptCopyBtn);
+
+      const promptBody = document.createElement('details');
+      promptBody.open = true;
+      promptBody.className = 'prompt-details';
+      promptBody.style.marginTop = '10px';
+      
+      const summary = document.createElement('summary');
+      summary.textContent = 'Показать итоговый текст промпта (обновляется при вводе)';
+      
+      const previewBox = document.createElement('div');
+      previewBox.className = 'prompt-preview-box';
+      previewBox.textContent = getFinalPromptText(); 
+
+      const updatePreview = () => {
+        previewBox.textContent = getFinalPromptText();
+      };
+
+      inputSpread.addEventListener('input', updatePreview);
+      inputQuestion.addEventListener('input', updatePreview);
+      inputCards.addEventListener('input', updatePreview);
+      
+      promptBody.append(summary, previewBox);
+
+      promptBlock.append(promptHeader, inputWrap, promptBody);
+      deckDetailContent.appendChild(promptBlock);
+
+      decksListView.style.display = 'none';
+      deckDetailView.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ========================================================================
+       ОТРИСОВКА КАРТОЧЕК КОЛОД, ШАБЛОНОВ И КОНСТРУКТОРА ВОПРОСОВ
+       ======================================================================== */
+    function renderDecksGrid() {
+      decksListView.innerHTML = '';
+
+      DECKS_DATA.forEach((deck) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'deck-card';
+
+        const top = document.createElement('div');
+        const title = document.createElement('div');
+        title.className = 'deck-card-title';
+        title.textContent = deck.title;
+
+        const spec = document.createElement('p');
+        spec.className = 'deck-card-spec';
+        spec.textContent = `Специализация: ${deck.specialization}`;
+        top.append(title, spec);
+
+        const action = document.createElement('span');
+        action.className = 'deck-card-action';
+        action.textContent = 'Открыть расклады →';
+
+        card.append(top, action);
+        card.addEventListener('click', () => openDeckDetail(deck.id));
+        decksListView.appendChild(card);
+      });
+    }
+
+    function renderTemplates() {
+      const container = document.getElementById('templates-container');
+      container.innerHTML = '';
+
+      TEMPLATES_DATA.forEach((section) => {
+        const secEl = document.createElement('div');
+        secEl.className = 'template-section';
+
+        const secTitle = document.createElement('h3');
+        secTitle.className = 'template-section-title';
+        secTitle.textContent = section.sectionTitle;
+        secEl.appendChild(secTitle);
+
+        const grid = document.createElement('div');
+        grid.className = 'template-variants';
+
+        section.variants.forEach((variant) => {
+          const card = document.createElement('div');
+          card.className = 'template-card';
+
+          const label = document.createElement('div');
+          label.className = 'template-variant-label';
+          label.textContent = variant.label;
+
+          const textEl = document.createElement('p');
+          textEl.className = 'template-text';
+          textEl.textContent = variant.text;
+
+          const copyBtn = createCopyButton(variant.text);
+
+          card.append(label, textEl, copyBtn);
+          grid.appendChild(card);
+        });
+
+        secEl.appendChild(grid);
+        container.appendChild(secEl);
+      });
+    }
+
+    // 3. Отрисовка 3 столбиков экрана «Формулировка вопроса Картам»
+    function renderQuestionHelper() {
+      const container = document.getElementById('question-helper-container');
+      container.innerHTML = '';
+
+          QUESTION_HELPER_COLUMNS.forEach((col) => {
+        const card = document.createElement('div');
+        card.className = 'question-helper-card';
+
+        const topWrap = document.createElement('div');
+
+        const title = document.createElement('h3');
+        title.className = 'template-variant-label';
+        title.style.marginBottom = '10px';
+        title.textContent = col.title;
+
+        const label = document.createElement('label');
+        label.className = 'question-helper-label';
+        label.setAttribute('for', `qh-input-${col.id}`);
+        label.textContent = 'Вопрос клиента:';
+
+        const textarea = document.createElement('textarea');
+        textarea.id = `qh-input-${col.id}`;
+        textarea.className = 'question-helper-textarea';
+        textarea.placeholder = col.placeholder;
+
+        // Всегда видимый заголовок и блок с текстом промпта (со скроллом)
+        const promptPreviewTitle = document.createElement('div');
+        promptPreviewTitle.className = 'question-helper-label';
+        promptPreviewTitle.style.marginTop = '12px';
+        promptPreviewTitle.textContent = 'Готовый промпт:';
+
+        const previewBox = document.createElement('div');
+        previewBox.className = 'prompt-preview-box';
+        
+        // Функция обновления текста в окошке предпросмотра в реальном времени
+        const updatePreview = () => {
+          const text = textarea.value.trim();
+          previewBox.textContent = text ? col.buildPrompt(text) : col.previewPrompt;
+        };
+
+        // Слушаем ввод текста (включая вставку из буфера обмена)
+        textarea.addEventListener('input', updatePreview);
+        textarea.addEventListener('paste', () => setTimeout(updatePreview, 10));
+
+        // Запускаем 1 раз при создании карточки, чтобы заполнить текст
+        updatePreview();
+
+        topWrap.append(title, label, textarea, promptPreviewTitle, previewBox);
+
+        // Кнопка копирует именно тот текст, который сейчас виден в окошке
+        const copyBtn = createCopyButton(() => previewBox.textContent);
+
+        card.append(topWrap, copyBtn);
+        container.appendChild(card);
+      });
+    }
+
+    /* ========================================================================
+       ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+       ======================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      initCurrentDate();
+      initRandomQuote();
+      initStopUnloadButton();
+      initMoodWidget();
+      renderDecksGrid();
+      renderTemplates();
+      renderQuestionHelper();
+
+      // Обработчики навигации по плиткам
+      document.getElementById('tile-decks').addEventListener('click', () => showScreen('decks'));
+      document.getElementById('tile-templates').addEventListener('click', () => showScreen('templates'));
+      document.getElementById('tile-question-helper').addEventListener('click', () => showScreen('questionHelper'));
+      document.getElementById('btn-back-to-decks').addEventListener('click', showDecksList);
+
+                 // Возврат на главную с иконки 🏠 и кнопки в подвале
+      document.getElementById('global-home-btn').addEventListener('click', () => showScreen('home'));
+      document.getElementById('footer-home-btn').addEventListener('click', () => showScreen('home'));
+    }); // <-- ВОТ ЭТА СКОБКА И СКОБКА С ТОЧКОЙ С ЗАПЯТОЙ ЗАКРЫВАЮТ СОБЫТИЕ DOMContentLoaded
+  </script>
+</body>
+</html>
